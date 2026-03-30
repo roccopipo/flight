@@ -43,7 +43,7 @@
     }
 
     .page-2 {
-      display: none; /* elle sera montrée après l'animation */
+      display: none;
       z-index: 5;
     }
 
@@ -83,11 +83,11 @@
       box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
     }
 
-    /* Avion animé */
+    /* Avion animé : il traverse + grossit */
     .plane {
       position: fixed;
-      top: 50%;
-      left: -15vw;
+      top: 55%;
+      left: -20vw;
       transform: translateY(-50%);
       font-size: clamp(2.5rem, 5vw, 3.5rem);
       z-index: 20;
@@ -96,15 +96,35 @@
     }
 
     @keyframes fly-across {
-      from {
-        transform: translate(-15vw, -50%) rotate(8deg);
+      0% {
+        transform: translate(-20vw, -50%) scale(0.7) rotate(8deg);
       }
-      to {
-        transform: translate(120vw, -60%) rotate(8deg);
+      100% {
+        transform: translate(120vw, -60%) scale(1.6) rotate(8deg);
       }
     }
 
-    /* Quelques étoiles en fond pour le style */
+    /* Particules de drapeaux qui sortent des moteurs */
+    .flag-particle {
+      position: fixed;
+      font-size: 1.6rem;
+      z-index: 15;
+      animation: flag-exhaust 1.2s ease-out forwards;
+      pointer-events: none;
+    }
+
+    @keyframes flag-exhaust {
+      0% {
+        transform: translate(0, 0) scale(1) rotate(0deg);
+        opacity: 1;
+      }
+      100% {
+        transform: translate(-90px, 40px) scale(0.7) rotate(720deg);
+        opacity: 0;
+      }
+    }
+
+    /* Étoiles de fond */
     .stars {
       position: fixed;
       inset: 0;
@@ -133,7 +153,7 @@
     </button>
   </section>
 
-  <!-- PAGE 2 (pour l'instant vide, tu pourras la remplir plus tard) -->
+  <!-- PAGE 2 (vide pour l’instant) -->
   <section class="page page-2">
     <!-- Future content about the flight will go here -->
   </section>
@@ -144,7 +164,6 @@
     const page2 = document.querySelector(".page-2");
 
     button.addEventListener("click", () => {
-      // Empêche de cliquer plusieurs fois
       button.disabled = true;
 
       // Crée l'avion
@@ -153,13 +172,47 @@
       plane.textContent = "✈️";
       document.body.appendChild(plane);
 
-      // Quand l'animation est finie, on passe à la page 2
+      // Génère des drapeaux 🇦🇱 qui sortent des deux moteurs
+      const exhaustInterval = setInterval(() => {
+        const rect = plane.getBoundingClientRect();
+
+        // Position approximative des deux moteurs (gauche / droite)
+        const engineYOffset = rect.height * 0.2;   // sous l'avion
+        const leftEngineX = rect.left + rect.width * 0.2;
+        const rightEngineX = rect.right - rect.width * 0.2;
+        const engineY = rect.top + engineYOffset;
+
+        createFlagParticle(leftEngineX, engineY);
+        createFlagParticle(rightEngineX, engineY);
+      }, 120);
+
+      // Quand l'avion a fini son animation
       plane.addEventListener("animationend", () => {
+        clearInterval(exhaustInterval);
         plane.remove();
         page1.style.display = "none";
         page2.style.display = "flex";
       });
     });
+
+    function createFlagParticle(x, y) {
+      const flag = document.createElement("div");
+      flag.className = "flag-particle";
+      flag.textContent = "🇦🇱";
+
+      flag.style.left = x + "px";
+      flag.style.top = y + "px";
+
+      // Légère variation aléatoire
+      const randomScale = 0.9 + Math.random() * 0.4;
+      const randomRotate = (Math.random() * 40 - 20);
+      flag.style.transform = `translate(0, 0) scale(${randomScale}) rotate(${randomRotate}deg)`;
+
+      document.body.appendChild(flag);
+
+      // Nettoyage après l'animation
+      setTimeout(() => flag.remove(), 1400);
+    }
   </script>
 </body>
 </html>
