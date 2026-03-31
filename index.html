@@ -317,7 +317,7 @@
     function startPage2Sequence() {
       const reelVideo = document.getElementById("reelVideo");
 
-      // Tentative de lecture auto après interaction utilisateur (peut être bloquée selon le navigateur).[web:88][web:94]
+      // Tentative de lecture auto après interaction utilisateur (peut être bloquée selon le navigateur).
       if (reelVideo) {
         const playPromise = reelVideo.play();
         if (playPromise !== undefined) {
@@ -327,9 +327,9 @@
         }
       }
 
-      // Jets de fleurs toutes les 0.5 s pendant 8 secondes
+      // Un jet (burst) toutes les 0.5 s pendant 8 secondes
       const flowerInterval = setInterval(() => {
-        createFlowerJet();
+        createFlowerJetBurst();
       }, 500);
 
       const jetsDuration = 8000; // ms
@@ -344,13 +344,24 @@
       }, jetsDuration + 1000);
     }
 
-    function createFlowerJet() {
+    // Crée un "jet" complet : entre 10 et 30 fleurs
+    function createFlowerJetBurst() {
+      const count = Math.floor(Math.random() * (30 - 10 + 1)) + 10; // 10 à 30 inclus[web:118]
+      for (let i = 0; i < count; i++) {
+        createSingleFlower();
+      }
+    }
+
+    // Une seule fleur (animation 0.6 s)
+    function createSingleFlower() {
       const flower = document.createElement("div");
       flower.className = "flower-jet";
       flower.textContent = "🌹";
 
-      const x = Math.random() * window.innerWidth;
-      flower.style.left = x + "px";
+      // Position de base du jet aléatoire, avec un petit décalage horizontal
+      const baseX = Math.random() * window.innerWidth;
+      const offset = (Math.random() - 0.5) * 80; // -40 à +40 px
+      flower.style.left = baseX + offset + "px";
 
       document.body.appendChild(flower);
 
