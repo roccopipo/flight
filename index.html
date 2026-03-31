@@ -45,6 +45,8 @@
     .page-2 {
       display: none;
       z-index: 5;
+      flex-direction: column;
+      gap: 1rem;
     }
 
     h1 {
@@ -104,7 +106,7 @@
       }
     }
 
-    /* Particules de drapeaux qui sortent des moteurs */
+    /* Particules de drapeaux sortant des moteurs */
     .flag-particle {
       position: fixed;
       width: 40px;
@@ -152,6 +154,78 @@
         radial-gradient(circle at 60% 60%, rgba(255, 255, 255, 0.25) 0, transparent 2px);
       opacity: 0.4;
     }
+
+    /* PAGE 2 : vidéo + jets de fleurs + photo finale */
+    .reel-wrapper {
+      width: min(480px, 100%);
+      aspect-ratio: 9 / 16;
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 18px 45px rgba(0, 0, 0, 0.6);
+      background: #000;
+    }
+
+    .reel-wrapper video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .page-2-text {
+      font-size: 1rem;
+      opacity: 0.85;
+    }
+
+    /* Jets de fleurs */
+    .flower-jet {
+      position: fixed;
+      bottom: -20px;
+      font-size: 2.4rem;
+      pointer-events: none;
+      z-index: 12;
+      animation: flower-burst 0.6s ease-out forwards;
+    }
+
+    @keyframes flower-burst {
+      0% {
+        opacity: 0;
+        transform: translateY(20px) scale(0.5);
+      }
+      40% {
+        opacity: 1;
+        transform: translateY(-30px) scale(1);
+      }
+      100% {
+        opacity: 0;
+        transform: translateY(-120px) scale(0.9);
+      }
+    }
+
+    /* Photo finale plein écran */
+    .final-photo-overlay {
+      position: fixed;
+      inset: 0;
+      background: #000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      z-index: 30;
+      transition: opacity 1.2s ease;
+    }
+
+    .final-photo-overlay.visible {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .final-photo-overlay img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
   </style>
 </head>
 <body>
@@ -168,15 +242,30 @@
     </button>
   </section>
 
-  <!-- PAGE 2 (vide pour l’instant, tu pourras remplir plus tard) -->
+  <!-- PAGE 2 -->
   <section class="page page-2">
-    <!-- Future content about the flight will go here -->
+    <div class="reel-wrapper">
+      <!-- Vidéo du Reel : mets le fichier reel.mp4 dans le repo -->
+      <video id="reelVideo" playsinline controls>
+        <source src="reel.mp4" type="video/mp4" />
+        Your browser does not support the video tag.
+      </video>
+    </div>
+    <p class="page-2-text">
+      Enjoy your in‑flight entertainment before landing in Gênes…
+    </p>
   </section>
+
+  <!-- Photo finale plein écran (final-photo.png à ajouter au repo) -->
+  <div class="final-photo-overlay" id="finalPhotoOverlay">
+    <img src="final-photo.png" alt="Surprise" />
+  </div>
 
   <script>
     const button = document.getElementById("see-info-btn");
     const page1 = document.querySelector(".page-1");
     const page2 = document.querySelector(".page-2");
+    const finalPhotoOverlay = document.getElementById("finalPhotoOverlay");
 
     button.addEventListener("click", () => {
       button.disabled = true;
@@ -191,7 +280,6 @@
       const exhaustInterval = setInterval(() => {
         const rect = plane.getBoundingClientRect();
 
-        // Position approximative des deux moteurs (gauche / droite sous l'avion)
         const engineYOffset = rect.height * 0.2;
         const leftEngineX = rect.left + rect.width * 0.2;
         const rightEngineX = rect.right - rect.width * 0.2;
@@ -201,31 +289,72 @@
         createFlagParticle(rightEngineX, engineY);
       }, 120);
 
-      // Quand l'avion a fini son animation
       plane.addEventListener("animationend", () => {
         clearInterval(exhaustInterval);
         plane.remove();
         page1.style.display = "none";
         page2.style.display = "flex";
+        startPage2Sequence();
       });
     });
 
     function createFlagParticle(x, y) {
       const flag = document.createElement("div");
       flag.className = "flag-particle";
-
       flag.style.left = x + "px";
       flag.style.top = y + "px";
 
       const img = document.createElement("img");
-      img.src = "albania-flag.png";  // image que tu as ajoutée dans le repo
+      img.src = "albania-flag.png";
       img.alt = "Albanian flag";
 
       flag.appendChild(img);
       document.body.appendChild(flag);
 
-      // Nettoyage après l'animation
       setTimeout(() => flag.remove(), 1400);
+    }
+
+    function startPage2Sequence() {
+      const reelVideo = document.getElementById("reelVideo");
+
+      // Tentative de lecture auto après interaction utilisateur (peut être bloquée selon le navigateur).[web:88][web:94]
+      if (reelVideo) {
+        const playPromise = reelVideo.play();
+        if (playPromise !== undefined) {
+          playPromise.catch(() => {
+            // Si bloqué, elle devra appuyer sur Play manuellement.
+          });
+        }
+      }
+
+      // Jets de fleurs toutes les 0.5 s pendant 8 secondes
+      const flowerInterval = setInterval(() => {
+        createFlowerJet();
+      }, 500);
+
+      const jetsDuration = 8000; // ms
+
+      setTimeout(() => {
+        clearInterval(flowerInterval);
+      }, jetsDuration);
+
+      // Affiche la photo finale après les jets
+      setTimeout(() => {
+        finalPhotoOverlay.classList.add("visible");
+      }, jetsDuration + 1000);
+    }
+
+    function createFlowerJet() {
+      const flower = document.createElement("div");
+      flower.className = "flower-jet";
+      flower.textContent = "🌹";
+
+      const x = Math.random() * window.innerWidth;
+      flower.style.left = x + "px";
+
+      document.body.appendChild(flower);
+
+      setTimeout(() => flower.remove(), 600); // durée de l'animation
     }
   </script>
 </body>
