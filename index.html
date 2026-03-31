@@ -83,7 +83,7 @@
       box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
     }
 
-    /* Avion animé : il traverse + grossit */
+    /* Avion animé : traverse l'écran en grandissant */
     .plane {
       position: fixed;
       top: 55%;
@@ -105,51 +105,38 @@
     }
 
     /* Particules de drapeaux qui sortent des moteurs */
-.flag-particle {
-  position: fixed;
-  width: 40px;
-  height: 26px;
-  z-index: 15;
-  pointer-events: none;
-  animation: flag-exhaust 1.2s ease-out forwards;
-}
+    .flag-particle {
+      position: fixed;
+      width: 40px;
+      height: 26px;
+      z-index: 15;
+      pointer-events: none;
+      animation: flag-exhaust 1.2s ease-out forwards;
+    }
 
-.flag-particle img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  border-radius: 4px;
-  box-shadow: 0 0 8px rgba(0, 0, 0, 0.6);
-  animation: flag-spin 0.8s linear infinite;
-}
-
-/* Trajectoire + disparition */
-@keyframes flag-exhaust {
-  0% {
-    transform: translate(0, 0) scale(1);
-    opacity: 1;
-  }
-  100% {
-    transform: translate(-90px, 40px) scale(0.7);
-    opacity: 0;
-  }
-}
-
-/* Rotation sur lui-même */
-@keyframes flag-spin {
-  from { transform: rotate(0deg); }
-  to   { transform: rotate(360deg); }
-}
+    .flag-particle img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 4px;
+      box-shadow: 0 0 8px rgba(0, 0, 0, 0.6);
+      animation: flag-spin 0.8s linear infinite;
+    }
 
     @keyframes flag-exhaust {
       0% {
-        transform: translate(0, 0) scale(1) rotate(0deg);
+        transform: translate(0, 0) scale(1);
         opacity: 1;
       }
       100% {
-        transform: translate(-90px, 40px) scale(0.7) rotate(720deg);
+        transform: translate(-90px, 40px) scale(0.7);
         opacity: 0;
       }
+    }
+
+    @keyframes flag-spin {
+      from { transform: rotate(0deg); }
+      to   { transform: rotate(360deg); }
     }
 
     /* Étoiles de fond */
@@ -181,7 +168,7 @@
     </button>
   </section>
 
-  <!-- PAGE 2 (vide pour l’instant) -->
+  <!-- PAGE 2 (vide pour l’instant, tu pourras remplir plus tard) -->
   <section class="page page-2">
     <!-- Future content about the flight will go here -->
   </section>
@@ -200,12 +187,12 @@
       plane.textContent = "✈️";
       document.body.appendChild(plane);
 
-      // Génère des drapeaux 🇦🇱 qui sortent des deux moteurs
+      // Génère des drapeaux qui sortent des deux moteurs pendant le vol
       const exhaustInterval = setInterval(() => {
         const rect = plane.getBoundingClientRect();
 
-        // Position approximative des deux moteurs (gauche / droite)
-        const engineYOffset = rect.height * 0.2;   // sous l'avion
+        // Position approximative des deux moteurs (gauche / droite sous l'avion)
+        const engineYOffset = rect.height * 0.2;
         const leftEngineX = rect.left + rect.width * 0.2;
         const rightEngineX = rect.right - rect.width * 0.2;
         const engineY = rect.top + engineYOffset;
@@ -224,23 +211,21 @@
     });
 
     function createFlagParticle(x, y) {
-  const flag = document.createElement("div");
-  flag.className = "flag-particle";
+      const flag = document.createElement("div");
+      flag.className = "flag-particle";
 
-  flag.style.left = x + "px";
-  flag.style.top = y + "px";
+      flag.style.left = x + "px";
+      flag.style.top = y + "px";
 
-  const img = document.createElement("img");
-  img.src = "albania-flag.png"; // fichier que tu as ajouté au repo
-  img.alt = "Albanian flag";
+      const img = document.createElement("img");
+      img.src = "albania-flag.png";  // image que tu as ajoutée dans le repo
+      img.alt = "Albanian flag";
 
-  flag.appendChild(img);
+      flag.appendChild(img);
+      document.body.appendChild(flag);
 
-  document.body.appendChild(flag);
-
-  // Nettoyage après l'animation
-  setTimeout(() => flag.remove(), 1400);
-}
+      // Nettoyage après l'animation
+      setTimeout(() => flag.remove(), 1400);
     }
   </script>
 </body>
