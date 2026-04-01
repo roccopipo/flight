@@ -202,7 +202,7 @@
       }
     }
 
-    /* Photo finale plein écran */
+    /* Photo finale plein écran + texte */
     .final-photo-overlay {
       position: fixed;
       inset: 0;
@@ -225,6 +225,18 @@
       width: 100%;
       height: 100%;
       object-fit: cover;
+    }
+
+    .final-photo-date {
+      position: absolute;
+      bottom: 6%;
+      right: 6%;
+      color: #ffffff;
+      font-size: clamp(1.8rem, 3vw, 2.4rem);
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-shadow: 0 0 12px rgba(0, 0, 0, 0.8);
+      z-index: 31;
     }
   </style>
 </head>
@@ -259,6 +271,7 @@
   <!-- Photo finale plein écran (final-photo.png à ajouter au repo) -->
   <div class="final-photo-overlay" id="finalPhotoOverlay">
     <img src="final-photo.png" alt="Surprise" />
+    <div class="final-photo-date">1er avril 2026</div>
   </div>
 
   <script>
@@ -346,7 +359,7 @@
 
     // Crée un "jet" complet : entre 10 et 30 fleurs
     function createFlowerJetBurst() {
-      const count = Math.floor(Math.random() * (30 - 10 + 1)) + 10; // 10 à 30 inclus[web:118]
+      const count = Math.floor(Math.random() * (30 - 10 + 1)) + 10;
       for (let i = 0; i < count; i++) {
         createSingleFlower();
       }
@@ -358,14 +371,13 @@
       flower.className = "flower-jet";
       flower.textContent = "🌹";
 
-      // Position de base du jet aléatoire, avec un petit décalage horizontal
       const baseX = Math.random() * window.innerWidth;
       const offset = (Math.random() - 0.5) * 80; // -40 à +40 px
       flower.style.left = baseX + offset + "px";
 
       document.body.appendChild(flower);
 
-      setTimeout(() => flower.remove(), 600); // durée de l'animation
+      setTimeout(() => flower.remove(), 600);
     }
   </script>
 </body>
