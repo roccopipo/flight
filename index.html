@@ -238,6 +238,41 @@
       text-shadow: 0 0 12px rgba(0, 0, 0, 0.8);
       z-index: 31;
     }
+
+    /* Voile rose + texte final */
+    .final-message {
+      position: absolute;
+      inset: 0;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      opacity: 0;
+      transition: opacity 0.8s ease;
+      z-index: 32;
+    }
+
+    .final-message.visible {
+      display: flex;
+      opacity: 1;
+    }
+
+    .final-message::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: rgba(255, 192, 203, 0.65); /* rose pâle translucide */
+    }
+
+    .final-message-text {
+      position: relative;
+      color: #5a0030;
+      font-size: clamp(1.4rem, 3vw, 2.2rem);
+      font-weight: 700;
+      line-height: 1.5;
+      text-shadow: 0 0 8px rgba(255, 255, 255, 0.8);
+      padding: 0 1.5rem;
+    }
   </style>
 </head>
 <body>
@@ -272,6 +307,13 @@
   <div class="final-photo-overlay" id="finalPhotoOverlay">
     <img src="final-photo.png" alt="Surprise" />
     <div class="final-photo-date">1er avril 2026</div>
+    <div class="final-message" id="finalMessage">
+      <div class="final-message-text">
+        tu es belle aujourd'hui<br>
+        poisson d'avril<br>
+        tu es belle tous les jours
+      </div>
+    </div>
   </div>
 
   <script>
@@ -279,6 +321,7 @@
     const page1 = document.querySelector(".page-1");
     const page2 = document.querySelector(".page-2");
     const finalPhotoOverlay = document.getElementById("finalPhotoOverlay");
+    const finalMessage = document.getElementById("finalMessage");
 
     button.addEventListener("click", () => {
       button.disabled = true;
@@ -330,7 +373,7 @@
     function startPage2Sequence() {
       const reelVideo = document.getElementById("reelVideo");
 
-      // Tentative de lecture auto après interaction utilisateur (peut être bloquée selon le navigateur).
+      // Tentative de lecture auto après interaction utilisateur (peut être bloquée selon le navigateur).[web:94]
       if (reelVideo) {
         const playPromise = reelVideo.play();
         if (playPromise !== undefined) {
@@ -354,12 +397,17 @@
       // Affiche la photo finale après les jets
       setTimeout(() => {
         finalPhotoOverlay.classList.add("visible");
+
+        // Après 3 secondes, affiche le voile rose et le texte
+        setTimeout(() => {
+          finalMessage.classList.add("visible");
+        }, 3000);
       }, jetsDuration + 1000);
     }
 
     // Crée un "jet" complet : entre 10 et 30 fleurs
     function createFlowerJetBurst() {
-      const count = Math.floor(Math.random() * (30 - 10 + 1)) + 10;
+      const count = Math.floor(Math.random() * (30 - 10 + 1)) + 10; // 10 à 30 inclus[web:118]
       for (let i = 0; i < count; i++) {
         createSingleFlower();
       }
